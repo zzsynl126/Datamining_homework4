@@ -16,12 +16,14 @@ files = os.listdir(path)
 train_csv = list(files)
 label=[['clf_name','out_rate','R_out_count','P_out_count','P_nor_count','AUC','AP']]
 label_D=pd.DataFrame(label)
+#形成保存的文件
 label_D.to_csv(path_new+"CBLOF_re.csv",mode='a',index=False, header=False)
 label_D.to_csv(path_new+"KNN_re.csv",mode='a',index=False, header=False)
 label_D.to_csv(path_new+"Isolation Forest_re.csv",mode='a',index=False, header=False)
 label_D.to_csv(path_new+"Feature Bagging_re.csv",mode='a',index=False, header=False)
 label_D.to_csv(path_new+"HBOS_re.csv",mode='a',index=False, header=False)
 for i in range(len(train_csv)):
+    #形成训练数据
     print("正在处理的文件为：%s" %(train_csv[i]))
     df = pd.read_csv(path+train_csv[i])
     label=[]
@@ -48,6 +50,7 @@ for i in range(len(train_csv)):
     }
     print("算法运行中：")
     for i, (clf_name, clf) in enumerate(classifiers.items()):
+        #运行多种算法模型
         print("算法：%s 正在运行" % (clf_name))
         clf.fit(X)
         y_pred=clf.labels_ 
@@ -60,10 +63,12 @@ for i in range(len(train_csv)):
                 y_pred[i]=0
             else:
                 y_pred[i]=1
+        #计算AUC和AP
         AUC=roc_auc_score(Y, y_pred)
         AP=average_precision_score(Y, y_pred)
         list=[[clf_name,outliers_rate,count,n_out,n_normal,AUC,AP]]
         list_d=pd.DataFrame(list)
+        #将结果保存到结果文件
         list_d.to_csv(path_new+clf_name+"_re.csv",mode='a',index=False, header=False)
         print("AUC=%4lf;AP=%4lf" %(AUC,AP))
         print("算法：%s 运行完毕" % (clf_name))
